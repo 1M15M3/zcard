@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration DEBUG="true" scan="true" scanPeriod="30 seconds">
+
+	<contextName>zcard</contextName>
+	<!-- 变量定义 -->
+	<!-- <property name="INFO_PATH" value="${catalina.home}/logs/zcard/info" 
+		/> -->
+	<!-- 指定属性文件路径 -->
+	<property resource="config.properties" />
+
+	<!-- 控制台输出 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %contextName %-4relative [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<!-- 指定文件输出，按照size和date滚动 -->
+	<appender name="SizeAndDateRollingLogFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- <file>${LOG_PATH}/zcard.log</file> <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"> 
+			rollover daily <fileNamePattern>${LOG_PATH}/zcard.%d{yyyy-MM-dd}.%i.log</fileNamePattern> 
+			each file should be at most 100MB, keep 60 days worth of history, but at 
+			most 20GB <maxFileSize>100MB</maxFileSize> <maxHistory>360</maxHistory> <totalSizeCap>20GB</totalSizeCap> 
+			</rollingPolicy> <encoder> <pattern> %d{HH:mm:ss} %contextName [%thread] 
+			%-5level %logger{36} - %msg%n </pattern> <charset>UTF-8</charset> </encoder> -->
+		<!-- 按天来回滚，如果需要按小时来回滚，则设置为{yyyy-MM-dd_HH} -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}/zcard.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<!-- 如果按天来回滚，则最大保存时间为1天，1天之前的都将被清理掉 -->
+			<maxHistory>30</maxHistory>
+			<!-- 按时间回滚的同时，按文件大小来回滚 -->
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+		<!-- 日志输出格式 -->
+		<encoder>
+			<pattern>
+				%d{HH:mm:ss} %contextName [%thread] %-5level %logger{36}-%msg%n
+			</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<!-- 日志输入到指定的文件中 -->
+<!-- 	<appender name="DateRollingLogFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		请填写绝对路径
+		<File>${LOG_PATH}/zcard.log</File>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			daily rollover
+			<fileNamePattern>${LOG_PATH}/zcard.%d{yyyy-MM-dd}.log.zip
+			</fileNamePattern>
+			keep 30 days' worth of history capped at 3GB total size
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		txt
+		<encoder>
+			<pattern>
+				%d{HH:mm:ss} %contextName [%thread] %-5level %logger{36}-%msg%n
+			</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender> -->
+
+	<logger name="com.ftsafe.iccd" level="${LOG_TYPE}" additivity="false">
+		<appender-ref ref="SizeAndDateRollingLogFile" />
+	</logger>
+	<logger name="com.ftsafe.iccd.core" level="${LOG_TYPE}"
+		additivity="false">
+		<appender-ref ref="SizeAndDateRollingLogFile" />
+	</logger>
+	<logger name="com.ftsafe.iccd.personalize" level="${LOG_TYPE}"
+		additivity="false">
+		<appender-ref ref="SizeAndDateRollingLogFile" />
+	</logger>
+
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
